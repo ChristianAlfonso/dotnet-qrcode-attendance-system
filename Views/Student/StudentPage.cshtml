@@ -1,0 +1,106 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Student</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <div class="bg-light">
+        <nav class="navbar navbar-expand shadow p-3 navbar-light" style="background-color: #2D2AE4;">
+            <div class="navbar-brand text-center text-light">
+                <h2>Quezon City University</h2>
+                <p>Student Information System</p>
+            </div>
+            <div class="ms-auto navbar-nav">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a href="./Login/LoginPage.cshtml" class="nav-link text-light">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="container-fluid p-3">
+
+            <div class="card">
+                <div class="card-header h3">Student Information:</div>
+                <div class="card-body">
+                    @if (ViewBag.StudentInfo != null)
+                    {
+                        var students = ViewBag.StudentInfo as List<Dictionary<string, string>>;
+                        <tbody>
+                            @for (var i = 0; i < students.Count; i++)
+                            {
+                                <div class="d-flex flex-column align-items-center">
+                                    <h5>QR CODE STUDENT ATTENDANCE PASS:</h5>
+                                    <img id="qrCode-@i" src="@students[i]["qr_code"]" alt="QR Code" class="img-fluid" />
+                                    <a class="btn btn-primary" href="@students[i]["qr_code"]" download="QR_Code_@students[i]["student_no"]">Download QRCODE</a>
+                                    <button class="btn btn-secondary mt-2" onclick="sendEmail('@students[i]["email_address"]', '@students[i]["qr_code"]')">Send to gmail</button>
+                                </div>
+                                <p>Student ID: @students[i]["student_no"]</p>
+                                <p>Full Name: @students[i]["first_name"] @students[i]["middle_name"]  @students[i]["last_name"]</p>
+
+                                <p>Section: @students[i]["section"]</p>
+                                <p>Age: @students[i]["age"]</p>
+                                <p>Email Address: @students[i]["email_address"]</p>
+                            }
+                        </tbody>
+                    }
+                    else
+                    {
+                        <tbody>
+                            <tr>
+                                <td colspan="9">No student data available.</td>
+                            </tr>
+                        </tbody>
+                    }
+                    @{if (ViewBag.CurrentSubject != null)
+                        {
+                            <caption>Current Subject: @ViewBag.CurrentSubject</caption>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function sendEmail(email, qrCodeUrl) {
+            // Show SweetAlert to prompt the user
+            Swal.fire({
+                title: 'Download Required',
+                text: 'Please download the QR code first and manually add it to your email and remember you student no.',
+                icon: 'info',
+                confirmButtonText: 'Okay',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Open Gmail compose window after alert confirmation
+                    const subject = encodeURIComponent("Your QR Code Attendance Pass");
+                    const body = `
+                            Hello,
+
+                            Please find your QR Code attached below:
+
+                            [Attach your QR code image here manually]
+
+                            Thank you!
+                        `;
+
+                    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}&body=${encodeURIComponent(body)}`;
+                    window.open(gmailUrl, '_blank');
+                }
+            });
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
+
+</html>

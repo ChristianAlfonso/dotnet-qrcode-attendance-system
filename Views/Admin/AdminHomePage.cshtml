@@ -1,0 +1,433 @@
+﻿@{
+
+}
+<style>
+
+    * {
+        box-sizing: border-box;
+        
+    }
+
+    header {
+        background-color: #2D2AE4;
+    }
+
+        header img {
+            width: 100px;
+        }
+
+    .nav-link {
+        color: white !important;
+    }
+
+
+    .header-brand {
+        gap: 1rem;
+    }
+
+    .admin-sidebar {
+        background-color: #2D2AE4;
+        width: 20%;
+        min-height: 150vh !important;
+    }
+
+   
+
+    #pieChart {
+        width: 400px !important;
+        height: 400px !important;
+    }
+
+
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.3/css/responsive.bootstrap5.css">
+
+
+
+
+
+
+<div class="admin-parent d-flex flex-column">
+
+    <header class="p-4 d-flex align-items-center justify-content-between">
+        <div class="header-brand d-flex justify-content-center align-items-center">
+            <div class="header-title text-center">
+                <h2 class="text-white">Quezon City University</h2>
+                <hr class="text-white">
+                <h4 class="text-white">Student Information System</h4>
+            </div>
+        </div>
+
+
+        <button type="button" class="navbar-toggler navbar-dark" id="sidebarToggle" data-bs-target="offcanvas">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </header>
+
+    <div class="hero-page d-flex">
+        <div class="admin-child vh-100 flex-grow-1 tab-content">
+
+            <div class="tab-pane active p-3" id="home">
+                <div class="container mt-2 d-flex justify-content-center align-items-center flex-column">
+                    <h3 class="text-center">Dashboard</h3>
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+
+            <div class="tab-pane p-3" id="account">
+
+
+                <div class="container tab-container p-3 d-flex justify-content-center align-items-center">
+                    <div class="container register-form shadow rounded-3 p-5 mt-3">
+                        @if (Session["studentMessage"] != null)
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                @Session["studentMessage"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        }
+                        @if (Session["message"] != null)
+                        {
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                @Session["message"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        }
+                        
+                        <h2 class="text-center">Register Account</h2>
+                        <form action="@Url.Action("AddStudent", "Admin")" method="post" class="studentForm">
+
+
+                            <div class="form-group mt-2">
+                                <label asp-for="student_no">Student No:</label>
+                                <input asp-for="student_no" placeholder="e.g. 22-2844" class="form-control" type="text" name="student_no" id="student-no" required>
+                            </div>
+                            <div class="form-group mt-3">   
+                                <label asp-for="firstName">First Name:</label>
+                                <input asp-for="firstName" placeholder="e.g. Christian" class="form-control" name="firstName" type="text" id="first-name" required>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label asp-for="middleName">Middle Name:</label>
+                                <input asp-for="middleName" placeholder="Leave the blank if no middle name" class="form-control" type="text" name="middleName" id="middle-name">
+                            </div>
+                            <div class="form-group mt-3">
+                                <label asp-for="surName">Surname:</label>
+                                <input asp-for="surName" placeholder="e.g. Alfonso" class="form-control" type="text" name="surName" id="surname" required>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label asp-for="password">Password:</label>
+                                <input asp-for="password" placeholder="" class="form-control" type="password" name="password" id="password" required>
+                            </div>
+                            <div class="form-group mt-3" id="sectionGroup">
+                                <label asp-for="section">Section:</label>
+                                <input asp-for="section" placeholder="e.g. Class A" class="form-control" type="text" name="section" id="section">
+                            </div>
+                            <div class="form-group mt-3">
+                                <label asp-for="age">Age:</label>
+                                <input asp-for="age" placeholder="e.g. 21" class="form-control" name="age" type="number" id="age" required>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label asp-for="email">Email:</label>
+                                <input asp-for="email" placeholder="e.g. alfonso.christian.macatangay@gmail.com" class="form-control" type="email" name="email" id="email" required>
+                            </div>
+                            <input asp-for="qrCodeData" type="hidden" name="qrCodeData" id="qrCodeData">
+                            <button class="btn btn-primary mt-2 form-control" id="submitBtn" type="submit">Register</button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="tab-pane fade p-5 mt-3" id="RegisterFaculty">
+
+                <div class="container-fluid shadow p-5">
+                    <h2 class="text-center">Register Faculty</h2>
+
+                    <form action="@Url.Action("AddFaculty", "Admin")" method="post">
+                        @if (Session["facultyMessageFailed"] != null)
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                @Session["facultyMessageFailed"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        }
+                        @if (Session["facultyMessageSuccess"] != null)
+                        {
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                @Session["facultyMessageSuccess"]
+                                <button type="button"  class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        }
+                        <div class="form-group mt-3">
+                            <label asp-for="id">Faculty Id:</label>
+                            <input asp-for="id" placeholder="e.g. 4444" class="form-control" type="number" name="id" id="faculty-no" required>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label asp-for="firstName">First Name:</label>
+                            <input asp-for="firstName" placeholder="e.g. Joel" class="form-control" name="firstName" type="text" id="faculty-first-name" required>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label asp-for="middleName">Middle Name:</label>
+                            <input asp-for="middleName" placeholder="Leave the blank if no middle name" class="form-control" type="text" name="middleName" id="faculty-middle-name">
+                        </div>
+                        <div class="form-group mt-3">
+                            <label asp-for="surName">Surname:</label>
+                            <input asp-for="surName" placeholder="e.g. Olayon" class="form-control" type="text" name="surName" id="faculty-surname" required>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label asp-for="age">Age:</label>
+                            <input asp-for="age" placeholder="e.g. 22" class="form-control" name="age" type="number" id="faculty-age" required>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label asp-for="email">Email:</label>
+                            <input asp-for="email" placeholder="e.g. joelolayon@gmail.com" class="form-control" type="email" name="email" id="faculty-email" required>
+                        </div>
+
+                        <div class="form-group mt-3">
+                            <label asp-for="password">Password:</label>
+                            <input asp-for="password" class="form-control" type="password" name="password" id="password" required>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label asp-for="subject">Subject:</label>
+                            <input asp-for="subject" placeholder="e.g. IPT102" class="form-control" name="subject" type="text" required>
+                        </div>
+                        <button class="btn btn-primary mt-2 form-control" type="submit">Save</button>
+                    </form>
+
+
+
+                    @if (TempData["facultyMessage"] != null)
+                    {
+                        <div class="alert alert-alert alert-dismissible fade show" role="alert">
+                            @TempData["facultyMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                </div>
+
+            </div>
+
+            <div class="tab-pane fade p-5 mt-3" id="faculty">
+
+                <nav class="breadcrumb">
+                    <span class="breadcrumb-item active" aria-current="page">Admin</span>
+                    <a class="breadcrumb-item" href="#faculty">Faculty</a>
+                </nav>
+                @{
+                    var faculties = ViewBag.FacultyList as List<Dictionary<string, string>>;
+                }
+                <table class="table table-striped table-bordered nowrap" id="facultyTable">
+                    <thead>
+                        <tr>
+                            <th>Faculty Id</th>
+                            <th>First Name</th>
+                            <th>Middle Name</th>
+                            <th>Last Name</th>
+                            <th>Age</th>
+                            <th>Email Address</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < faculties.Count; i++)
+                        {
+                            var faculty = faculties[i];
+                            <tr>
+
+                                <td>@faculty["id"]</td>
+                                <td>@faculty["first_name"]</td>
+                                <td>@faculty["middle_name"]</td>
+                                <td>@faculty["last_name"]</td>
+                                <td>@faculty["age"]</td>
+                                <td>@faculty["email_address"]</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+
+
+            <div class="tab-pane fade p-5 mt-3" id="student">
+                <nav class="breadcrumb">
+                    <span class="breadcrumb-item active" aria-current="page">Admin</span>
+                    <a class="breadcrumb-item" href="#student">Student</a>
+                </nav>
+                @{
+                    var students = ViewBag.StudentList as List<Dictionary<string, string>>;
+                }}
+                <table class="table table-striped table-bordered nowrap" id="studentTable">
+                    <thead>
+                        <tr>
+                            <th>Student Id</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Middle Name</th>
+                            <th>Last Name</th>
+                            <th>Age</th>
+                            <th>Email Address</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < students.Count; i++)
+                        {
+                            var student = students[i];
+                            <tr>
+                                <td>@student["student_no"]</td>
+                                <td>@student["first_name"]</td>
+                                <td>@student["last_name"]</td>
+                                <td>@student["middle_name"]</td>
+                                <td>@student["section"]</td>
+                                <td>@student["age"]</td>
+                                <td>@student["email_address"]</td>
+
+
+                            </tr>
+
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+
+        </div>
+
+        <div class="admin-sidebar p-3 collapse" id="sidebar">
+            <ul class="nav nav-pills flex-column" style="gap:5px;">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#home">Home</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#account">Register Student</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#RegisterFaculty">Register Faculty</a>
+                </li>
+
+
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#faculty">Faculty</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#student">Student</a>
+                </li>
+
+            </ul>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap5.js"></script>
+<script src="https://cdn.datatables.net/responsive/3.0.3/js/dataTables.responsive.js"></script>
+<script src="https://cdn.datatables.net/responsive/3.0.3/js/responsive.bootstrap5.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Initialize DataTables
+    new DataTable('#facultyTable', {
+        responsive: true
+    });
+
+    new DataTable('#studentTable', {
+        responsive: true
+    });
+
+    // Sidebar toggle logic
+    document.getElementById('sidebarToggle').addEventListener('click', function () {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar.classList.contains('show')) {
+            sidebar.classList.remove('show');
+        } else {
+            sidebar.classList.add('show');
+        }
+    });
+
+   
+    document.querySelector('.studentForm').addEventListener('submit', function (e) {
+        // Prevent the default form submission
+
+        // Get form values
+        const studentNo = document.getElementById('student-no').value;
+        const firstName = document.getElementById('first-name').value;
+        const middleName = document.getElementById('middle-name').value;
+        const surname = document.getElementById('surname').value;
+        const section = document.getElementById('section').value;
+        const age = document.getElementById('age').value;
+        const email = document.getElementById('email').value;
+
+        // Create QR code data
+        const qrData = {
+            studentNo,
+            firstName,
+            middleName,
+            surname,
+            section,
+            age,
+            email
+        };
+
+        // Generate QR code
+        const typeNumber = 0;
+        const errorCorrectionLevel = 'L';
+        const qr = qrcode(typeNumber, errorCorrectionLevel);
+        qr.addData(JSON.stringify(qrData));
+        qr.make();
+
+        // Get QR code data URL
+        const qrCodeDataUrl = qr.createDataURL();
+
+        // Set hidden input value
+        document.getElementById('qrCodeData').value = qrCodeDataUrl;
+
+       
+    });
+ 
+
+    // Doughnut Chart
+    // Removed Doughnut Chart JavaScript
+
+    // Pie Chart
+    const pieCtx = document.getElementById('pieChart').getContext('2d');
+    new Chart(pieCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Students', 'Faculty'],
+            datasets: [{
+                label: 'Count of Users',
+                 data: [@Html.Raw(ViewBag.StudentCount ?? "0"), @Html.Raw(ViewBag.FacultyCount ?? "0")],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.2)', // Blue for Students
+                    'rgba(255, 99, 132, 0.2)'  // Red for Faculty
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'User Distribution'
+                }
+            }
+        }
+    });
+</script>
